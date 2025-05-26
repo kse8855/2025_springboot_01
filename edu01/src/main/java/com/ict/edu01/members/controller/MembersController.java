@@ -70,6 +70,30 @@ public class MembersController {
         }
         return dataVO;
     }
+
+   @PostMapping("/register")
+   public DataVO getRegister(@RequestBody MembersVO mvo) {
+       DataVO dataVO = new DataVO();
+
+       try {
+        
+            int result = membersService.getRegister(mvo);
+            if(result > 0){
+                dataVO.setSuccess(true);
+                dataVO.setMessage("회원가입 성공");
+            }else{
+                dataVO.setSuccess(false);
+                dataVO.setMessage("회원가입 실패");
+            }
+       } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("회원가입 실패");
+       }
+       
+       return dataVO;
+   }
+   
+    
     
     
 }
