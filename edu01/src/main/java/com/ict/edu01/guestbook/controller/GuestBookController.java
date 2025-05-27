@@ -42,12 +42,12 @@ public class GuestBookController {
     
     //이름이 일치하면 생략 가능능
     @GetMapping("guestbookdetail")
-    public String guestbookdetail(@RequestParam("gb_idx") String gb_idx) {
+    public DataVO guestbookdetail(@RequestParam("gb_idx") String gb_idx) {
         DataVO dataVO = new DataVO();
         try {
             GuestBookVO gvo = guestBookService.guestbookdetail(gb_idx);
             if(gvo == null){
-                dataVO.setSuccess(true);
+                dataVO.setSuccess(false);
                 dataVO.setMessage("데이터가 존재하지 않습니다");
             }else{
                 dataVO.setSuccess(true);
