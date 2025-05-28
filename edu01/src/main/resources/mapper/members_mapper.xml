@@ -12,5 +12,8 @@
         insert into members(m_id, m_pw, m_name, m_addr, m_addr2, m_phone, m_reg, m_active, m_active_reg)
         values(#{m_id}, #{m_pw}, #{m_name}, #{m_addr}, #{m_addr2}, #{m_phone}, now(), 0, now())
     </insert>
+    <select id="getMypage" resultType="MembersVO" parameterType="String">
+        select * from where m_idx=#{m_idx}
+    </select>
 
 </mapper>

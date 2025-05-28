@@ -92,6 +92,29 @@ public class MembersController {
        
        return dataVO;
    }
+
+   @PostMapping("mypage")
+   public DataVO getMyPage(@RequestBody MembersVO mvo2) {
+       System.out.println("m_idx:" + mvo2);
+       DataVO dataVO = new DataVO();
+       try {
+        MembersVO mvo = membersService.getMyPage(mvo2.getM_idx());
+        if(mvo == null){
+            dataVO.setSuccess(false);
+            dataVO.setMessage("잘못된 정보");
+        }else{
+            dataVO.setSuccess(true);
+            dataVO.setMessage("성공");
+            dataVO.setData(mvo);
+        }
+       } catch (Exception e) {
+        dataVO.setSuccess(false);
+            dataVO.setMessage("오류: " + e.getMessage());
+       }
+       
+       return dataVO;
+   }
+   
    
     
     
