@@ -28,9 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class SecurityConfig {
 
-    private final AuthenticationManager authenticationManager;
-
-    private final CorsConfigurationSource corsConfigurationSource;
     private final JwtRequestFilter jwtRequestFilter;
     private final JwtUtil jwtUtil;
     private final MyUserDetailService userDetailService;
@@ -45,8 +42,6 @@ public class SecurityConfig {
         this.userDetailService = userDetailService;
         this.membersService = membersService;
         this.jwtUtil = jwtUtil;
-        this.corsConfigurationSource = corsConfigurationSource;
-        this.authenticationManager = authenticationManager;
     }
 
     @Bean
