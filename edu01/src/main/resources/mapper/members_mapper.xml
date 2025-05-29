@@ -15,5 +15,15 @@
     <select id="getMypage" resultType="MembersVO" parameterType="String">
         select * from where m_idx=#{m_idx}
     </select>
+    <select id="findUserById" parameterType="String" resultType="MembersVO">
+          select * from members where m_id = #{m_id}
+    </select>
+    <insert id="saveRefreshToken" parameterType="RefreshVO">
+        insert into refresh_token(m_id,refresh_token, expiry_date) 
+        values(#{m_id}, #{refresh_token}, #{expiry_date})
+        ON DUPLICATE KEY UPDATE
+        refresh_token = #{refresh_token},
+        expiry_date = #{expiry_date}
+    </insert>
 
 </mapper>
