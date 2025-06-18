@@ -48,7 +48,9 @@ public class JwtRequestFilter extends OncePerRequestFilter{
         "/api/guestbook/guestbooklist".equals(path) ||
         path.startsWith("/api/guestbook/guestbookdetail") || // 디테일 조회 등
         path.startsWith("/api/guestbook/")     
-        || path.startsWith("/uploads/")              // 기타 guestbook 하위 경로
+        || path.startsWith("/uploads/")  ||
+        "/api/board/boarddetail".equals(path) ||
+        path.startsWith("/api/board/boarddetail")            // 기타 guestbook 하위 경로
     ) {
         filterChain.doFilter(request, response);
         return;

@@ -71,6 +71,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/guestbook/guestbookinsert").permitAll()
                 .requestMatchers("/api/guestbook/guestbooklist").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers("/api/board/**").permitAll()
+                .requestMatchers("/api/board/boarddetail").permitAll()
+                .requestMatchers("/api/board/boarddetail/**").permitAll()
                 .anyRequest().authenticated())
 
             // oauth2Login 설정
