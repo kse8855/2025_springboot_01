@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Date;
 
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -55,7 +56,7 @@ public class JwtUtil {
             // Bearer 는 HTTP Authorization 헤더를 통해 토큰 전달 방식
             // Bearer 의미는  "이 토큰 소지한 자는 인증된 것으로 간주한다." 의미
             // Authorization: Bearer token
-            token = token.substring(7); // token 값만 가져오기 
+            // token = token.substring(7); // token 값만 가져오기 
             Claims claims = Jwts.parserBuilder()  
                         .setSigningKey(secretKey)
                         .build()
@@ -84,13 +85,14 @@ public class JwtUtil {
         .parseClaimsJws(token)
         .getBody();
     }
-    public boolean validateToken(String jwtToken, UserDetails userDetails){
-        try{
+
+    public boolean validateToken(String jwtToken,UserDetails userDetails){
+        try {
             validateAndExtractUserId(jwtToken);
-        }catch(Exception e){
-            return false;
+            return true ;
+        } catch (Exception e) {
+            return false ;
         }
-        return true;
     }
 
 }

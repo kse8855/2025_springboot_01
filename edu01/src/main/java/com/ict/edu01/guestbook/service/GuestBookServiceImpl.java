@@ -24,6 +24,11 @@ public class GuestBookServiceImpl implements GuestBookService {
         return guestbookMapper.guestbookdetail(gb_idx);
     }
 
+    @Override
+    public int getGuestbookinsert(GuestBookVO gvo) {
+        return guestbookMapper.getGuestbookinsert(gvo);
+    }
+
     
     
 }

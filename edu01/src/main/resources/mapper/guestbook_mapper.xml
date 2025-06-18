@@ -11,5 +11,9 @@
     <select id="guestbookdetail" parameterType="String" resultType="GuestBookVO">
       select * from guestbook where gb_idx = #{gb_idx}
     </select>
+    <insert id="getGuestbookinsert" parameterType="GuestBookVO">
+      insert into guestbook(gb_name, gb_subject, gb_content, gb_email, gb_f_name, gb_pw, gb_regdate) 
+      value(#{gb_name}, #{gb_subject}, #{gb_content}, #{gb_email}, #{gb_f_name}, #{gb_pw}, NOW())
+    </insert>
 
 </mapper>

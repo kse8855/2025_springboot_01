@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PasswordTest",
+            "request": "launch",
+            "mainClass": "com.ict.edu01.common.PasswordTest",
+            "projectName": "edu01"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-Edu01Application<edu01>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -9,7 +16,7 @@
             "projectName": "edu01",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
-            "vmArgs": "-Dfile.encoding=UTF-8"
+            "vmArgs": "-Dfile.encoding=UTF-8 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62775 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=edu01"
         }
     ]
 }

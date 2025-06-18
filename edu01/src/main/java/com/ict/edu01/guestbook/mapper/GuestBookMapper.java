@@ -12,4 +12,5 @@ import com.ict.edu01.guestbook.vo.GuestBookVO;
 public interface GuestBookMapper {
     List<GuestBookVO> guestbooklist();
     GuestBookVO guestbookdetail(String gb_idx);
+    int getGuestbookinsert(GuestBookVO gvo);
 }

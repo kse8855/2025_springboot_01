@@ -18,6 +18,7 @@ public class MembersServiceImpl implements MembersService{
 
     @Override
     public MembersVO getLogin(MembersVO mvo) {
+        System.out.println(">>>> DB 접속 성공 여부 확인 로그");
         return membersMapper.getLogin(mvo);
     }
 
@@ -34,6 +35,16 @@ public class MembersServiceImpl implements MembersService{
     @Override
     public void saveRefreshToken(String m_id, String refreshToken, Date expiry_date) {
         membersMapper.saveRefreshToken(new RefreshVO (m_id, refreshToken, expiry_date));
+    }
+
+    @Override
+    public RefreshVO getRefreshToken(String m_id) {
+        return membersMapper.getRefreshToken(m_id);
+    }
+
+    @Override
+    public void getRegister2(MembersVO mvo) {
+        membersMapper.getRegister2(mvo);
     }
     
 }

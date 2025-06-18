@@ -30,53 +30,86 @@ public class JwtRequestFilter extends OncePerRequestFilter{
    private UserDetailsService userDetailsService;
 
 
-    
-
-
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("JwtRequestFilter 호출");
+
+        log.info("JwtRequestFilter call");
+
+        //토큰검사 예외처리 : refresh 요청 필터 통과
+        String path = request.getRequestURI();
+        if("/api/members/refresh".equals(path)){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 2. 방명록 관련 경로는 모두 필터 통과 (로그인 필요없음)
+    if (
+        "/api/guestbook/guestbookinsert".equals(path) ||
+        "/api/guestbook/guestbooklist".equals(path) ||
+        path.startsWith("/api/guestbook/guestbookdetail") || // 디테일 조회 등
+        path.startsWith("/api/guestbook/")     
+        || path.startsWith("/uploads/")              // 기타 guestbook 하위 경로
+    ) {
+        filterChain.doFilter(request, response);
+        return;
+    }
                 
         // 들어오는 요청마다 Authorization 있고 Authorization를 jwt 검증하기 위해서 추출
         final String authorizationHeader = request.getHeader("Authorization");
         String userId = null;
         String jwtToken = null;
-
+        
         // authorizationHeader 에 "Bearer " 있어야 다음 단계를 할수 있다.
-        if(authorizationHeader != null && authorizationHeader .startsWith("Bearer ")){
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
             jwtToken = authorizationHeader.substring(7);
             try {
                 // 토큰 만료 검사 
                 if(jwtUtil.isTokenExpired(jwtToken)){
-                    log.info("토큰만료");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "token error");
+                    log.info("token expire error");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json; charset=UTF-8");
+                    response.getWriter().write("{\"success\":false, \"message\":\"tokenexpired\"}");
                     return ;
                 }
-                userId = jwtUtil.validateAndExtractUserId(jwtToken);
+                userId =  jwtUtil.validateAndExtractUserId(jwtToken);
+                log.info("userId : " + userId);
+
             } catch (Exception e) {
-               log.info("토큰 처리 중 오류 발생");
-               response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토근 처리 오류");
+               log.info("token error");
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json; charset=UTF-8");
+                    response.getWriter().write("{\"success\":false, \"message\":\"tokenexpired\"}");
+                    return ;
             }
 
         }else{
-            log.info("Authorization 비었거나 Bearer 토큰이 없네요 ");
+            log.info("Authorization empty Bearer token empty");
         }
 
+        // 사용자ID가 존재하고 SecurityContext에 인증정보가 없는 경우 등록하기 위해서서
         if(userId != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            log.info("jwtToken-2 : " + jwtToken.substring(7));
+            // 등록하자 
+            // DB 에서 사용자 정보 가져오기 
             UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-
+            
+            // JWT 검증 및 SpringSecurity 인증객체에 사용자 정보를 등록
             if(jwtUtil.validateToken(jwtToken, userDetails)){
+                // SpringSecurity 표준 인증 객체 (인증주체, 자격증명(null=jwt), 권한정보(ROLE))
                 UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
+                  new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                // SecurityContext에 등록
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                log.info("Jwt token ok");
+                log.info("JWT token ok");
             }else{
-                log.info("Jwt token error");
+               log.info("JWT token error"); 
             }
+            
         }
 
+        // 필터 체인 실행 (다른 필터로 요청 전달)
         filterChain.doFilter(request, response);
+
     }
     
 }

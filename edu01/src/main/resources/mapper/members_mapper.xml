@@ -8,16 +8,25 @@
     <select id="getLogin" resultType="MembersVO" parameterType="MembersVO">
         select * from members where m_id=#{m_id} and m_pw=#{m_pw}
     </select>
-    <insert id="getRegister" parameterType="MembersVO">
-        insert into members(m_id, m_pw, m_name, m_addr, m_addr2, m_phone, m_reg, m_active, m_active_reg)
-        values(#{m_id}, #{m_pw}, #{m_name}, #{m_addr}, #{m_addr2}, #{m_phone}, now(), 0, now())
+    <insert id="getRegister"  parameterType="MembersVO">
+        insert into members(m_id, m_pw, m_name, m_addr, m_addr2, m_email, m_phone )
+        values(#{m_id}, #{m_pw}, #{m_name}, #{m_addr}, #{m_addr2}, #{m_email}, #{m_phone})
     </insert>
-    <select id="getMypage" resultType="MembersVO" parameterType="String">
-        select * from where m_idx=#{m_idx}
+    <insert id="getRegister2"  parameterType="MembersVO">
+        insert into members(m_id, m_name, sns_email_kakao, sns_provider)
+        values(#{m_id}, #{m_name}, #{sns_email_kakao}, #{sns_provider})
+    </insert>
+    
+    <select id="getMyPage" parameterType="String" resultType="MembersVO">
+        select * from members where m_id = #{m_id}
     </select>
+
     <select id="findUserById" parameterType="String" resultType="MembersVO">
-          select * from members where m_id = #{m_id}
+          select * from members where m_id = #{username}
     </select>
+    
+    <!--  ON DUPLICATE KEY UPDATE => 키(Primary key, Unique)가 중복이면 업데이트하시오오
+       없으면 insert , 있으면  update   -->
     <insert id="saveRefreshToken" parameterType="RefreshVO">
         insert into refresh_token(m_id,refresh_token, expiry_date) 
         values(#{m_id}, #{refresh_token}, #{expiry_date})
@@ -25,5 +34,9 @@
         refresh_token = #{refresh_token},
         expiry_date = #{expiry_date}
     </insert>
+    <select id="getRefreshToken" parameterType="String" resultType="RefreshVO">
+        select * from refresh_token where m_id = #{m_id}
+    </select>
+
 
 </mapper>

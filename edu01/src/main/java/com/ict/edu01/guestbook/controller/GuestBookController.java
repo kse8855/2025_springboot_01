@@ -5,17 +5,24 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ict.edu01.guestbook.service.GuestBookService;
 import com.ict.edu01.guestbook.vo.GuestBookVO;
 import com.ict.edu01.members.vo.DataVO;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 
 @RestController
 @RequestMapping("/api/guestbook")
+@CrossOrigin
 public class GuestBookController {
     @Autowired
     private GuestBookService guestBookService;
@@ -40,7 +47,7 @@ public class GuestBookController {
         return dataVO;
     }
     
-    //이름이 일치하면 생략 가능능
+    //이름이 일치하면 생략 가능
     @GetMapping("guestbookdetail")
     public DataVO guestbookdetail(@RequestParam("gb_idx") String gb_idx) {
         DataVO dataVO = new DataVO();
@@ -59,6 +66,43 @@ public class GuestBookController {
             dataVO.setMessage("서버오류");
         }
         return dataVO; 
+    }
+
+    @PostMapping("guestbookinsert")
+    public DataVO getGuestbookinsert(@ModelAttribute GuestBookVO gvo,
+    @RequestPart(value = "file", required = false) MultipartFile file){
+        DataVO dataVO = new DataVO();
+        try {
+        // 1. 파일 저장 및 파일명 설정
+            if (file != null && !file.isEmpty()) {
+                String originalFileName = file.getOriginalFilename();
+                // 파일명 중복 방지 (타임스탬프)
+                String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
+
+                // === uploads 경로는 Spring Boot가 실행되는 "프로젝트 루트" 기준 ===
+                String uploadDir = System.getProperty("user.dir") + "/uploads";
+                java.io.File dir = new java.io.File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                // 실제 파일 저장
+                String uploadPath = uploadDir + java.io.File.separator + uniqueFileName;
+                file.transferTo(new java.io.File(uploadPath));
+
+                // ★★★ VO에 파일명 저장
+                gvo.setGb_f_name(uniqueFileName);
+            }
+
+            // 2. DB 저장
+            int result = guestBookService.getGuestbookinsert(gvo);
+
+            dataVO.setSuccess(true);
+            dataVO.setMessage("글쓰기 완료");
+        } catch (Exception e) {
+            e.printStackTrace();
+            dataVO.setSuccess(false);
+            dataVO.setMessage("서버 오류 : " + e.getMessage());
+        }
+    return dataVO;
     }
     
     
