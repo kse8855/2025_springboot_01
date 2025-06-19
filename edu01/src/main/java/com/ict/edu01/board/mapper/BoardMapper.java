@@ -11,5 +11,5 @@ public interface BoardMapper {
 
     List<BoardVO> boardlist();
     BoardVO boarddetail(String b_idx);
-    int BoardInsert (BoardVO bvo);
+    int getBoardInsert (BoardVO bvo);
 }

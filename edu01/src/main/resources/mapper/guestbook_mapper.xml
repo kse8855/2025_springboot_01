@@ -5,15 +5,25 @@
   
 <mapper namespace="com.ict.edu01.guestbook.mapper.GuestBookMapper">
 
-    <select id="guestbooklist" resultType="GuestBookVO">
-      select * from guestbook
-    </select>
-    <select id="guestbookdetail" parameterType="String" resultType="GuestBookVO">
-      select * from guestbook where gb_idx = #{gb_idx}
-    </select>
-    <insert id="getGuestbookinsert" parameterType="GuestBookVO">
-      insert into guestbook(gb_name, gb_subject, gb_content, gb_email, gb_f_name, gb_pw, gb_regdate) 
-      value(#{gb_name}, #{gb_subject}, #{gb_content}, #{gb_email}, #{gb_f_name}, #{gb_pw}, NOW())
-    </insert>
+  <select id="guestbooklist" resultType="GuestBookVO">
+    select * from guestbook order by gb_regdate desc
+  </select>
+  <select id="guestbookdetail" parameterType="String" resultType="GuestBookVO">
+    select * from guestbook where gb_idx = #{gb_idx}
+  </select>
+  <insert id="getGuestbookinsert" parameterType="GuestBookVO">
+    insert into guestbook(gb_name, gb_subject, gb_content, gb_email, gb_f_name, gb_pw, gb_regdate) 
+    value(#{gb_name}, #{gb_subject}, #{gb_content}, #{gb_email}, #{gb_f_name}, #{gb_pw}, NOW())
+  </insert>
+  <update id="guestbookupdate" parameterType="GuestBookVO">
+    update guestbook
+    set gb_name=#{gb_name}, gb_subject=#{gb_subject}, gb_content=#{gb_content},
+        gb_email=#{gb_email}, gb_f_name=#{gb_f_name}, gb_pw=#{gb_pw}
+    where gb_idx=#{gb_idx}
+  </update>
+  <delete id="deleteGuestbook" parameterType="String">
+    delete from guestbook where gb_idx=#{gb_idx}
+  </delete>
+
 
 </mapper>

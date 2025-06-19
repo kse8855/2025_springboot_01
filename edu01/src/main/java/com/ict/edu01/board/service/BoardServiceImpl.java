@@ -25,8 +25,8 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public int BoardInsert(BoardVO bvo) {
-        return boardMapper.BoardInsert(bvo);
+    public int getBoardInsert(BoardVO bvo) {
+        return boardMapper.getBoardInsert(bvo);
     }
     
 }

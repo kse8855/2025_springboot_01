@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/guestbook/**").permitAll()
                 .requestMatchers("/api/guestbook/guestbookinsert").permitAll()
                 .requestMatchers("/api/guestbook/guestbooklist").permitAll()
+                .requestMatchers("/api/guestbook/guestbookdelete").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/api/board/**").permitAll()
                 .requestMatchers("/api/board/boarddetail").permitAll()

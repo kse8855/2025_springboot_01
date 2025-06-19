@@ -12,6 +12,7 @@ import com.ict.edu01.guestbook.vo.GuestBookVO;
 import com.ict.edu01.members.vo.DataVO;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -104,6 +105,39 @@ public class GuestBookController {
         }
     return dataVO;
     }
+
+    @PostMapping("guestbookupdate")
+    public DataVO guestbookupdate(
+        @ModelAttribute GuestBookVO gvo,
+        @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        DataVO dataVO = new DataVO();
+        try {
+            // 파일처리, 기존 파일명 유지/갱신 등은 기존 insert처럼 처리
+            int result = guestBookService.guestbookupdate(gvo, file);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("수정 완료");
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("수정 실패: " + e.getMessage());
+        }
+        return dataVO;
+    }
+
+    @DeleteMapping("guestbookdelete")
+    public DataVO deleteGuestbook(@RequestParam("gb_idx") String gb_idx) {
+        DataVO dataVO = new DataVO();
+        try {
+            int result = guestBookService.deleteGuestbook(gb_idx);
+            dataVO.setSuccess(true);
+            dataVO.setMessage("삭제 완료");
+        } catch (Exception e) {
+            dataVO.setSuccess(false);
+            dataVO.setMessage("삭제 실패: " + e.getMessage());
+        }
+        return dataVO;
+    }
+
     
     
     
