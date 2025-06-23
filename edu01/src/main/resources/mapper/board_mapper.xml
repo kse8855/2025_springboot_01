@@ -11,11 +11,9 @@
     <select id="boarddetail" parameterType="String" resultType="BoardVO">
       select * from board where b_idx = #{b_idx}
     </select>
-    <delete id="boarddelete">
-
-    </delete>
-    <insert id="BoardInsert" parameterType="BoardVO">
-        insert into board(writer, title, content, pwd, )
+    <insert id="getBoardinsert" parameterType="BoardVO">
+      insert into board (writer, title, content, pwd, f_name, regdate, hit, b_groups, b_step, b_lev)
+      values (#{writer}, #{title}, #{content}, #{pwd}, #{f_name}, now(), 0, 0, 0, 0)
     </insert>
 
 </mapper>

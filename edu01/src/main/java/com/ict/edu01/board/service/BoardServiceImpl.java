@@ -23,10 +23,9 @@ public class BoardServiceImpl implements BoardService{
     public BoardVO boarddetail(String b_idx) {
         return boardMapper.boarddetail(b_idx);
     }
-
     @Override
-    public int getBoardInsert(BoardVO bvo) {
-        return boardMapper.getBoardInsert(bvo);
+    public int getBoardinsert(BoardVO bvo) {
+        return boardMapper.getBoardinsert(bvo);
     }
     
 }

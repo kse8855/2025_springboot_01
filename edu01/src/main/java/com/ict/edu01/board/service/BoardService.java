@@ -8,5 +8,5 @@ public interface BoardService {
 
     List<BoardVO> boardlist();
     BoardVO boarddetail(String b_idx);
-    int getBoardInsert (BoardVO bvo);
+    int getBoardinsert(BoardVO bvo);
 }

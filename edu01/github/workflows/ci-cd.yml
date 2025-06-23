@@ -1,0 +1,87 @@
+name: Spring Boot CI/CD
+
+on: 
+    push: 
+        branches:
+            - main
+
+jobs: 
+    build-and-deploy: 
+        runs-on: ubuntu-latest
+
+        steps:
+            #1. Github 저장소의 코드를 현재 워크플로우 실행 환경으로 클론
+            # actions/checkout@v3 는 GitHub 공식 액션으로 가장 먼저 실행되어야 한다.(빌드나 하기 위함)
+            - name: Checkout code
+              uses: actions/checkout@v3
+            
+            - name: Set up JDK
+              uses: actions/setup-java@v3
+              with:
+                java-version: '21'
+                distribution: 'temurin'
+
+            - name: Grant execute permission for Gradlew
+              run: chmod +x gradlew
+
+            - name: Build with Gradle
+              run: ./gradlew build
+                
+            - name: DockerHub Login
+              uses: docker/login-action@v2
+              with:
+                username: ${{secrets.DOCKER_USERNAME}}
+                password: ${{secrets.DOCKER_PASSWORD}}
+
+            - name: Create .env file
+              run: |
+                echo "DB_HOST=${{ secrets.DB_HOST }}" > .env
+                echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+                echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+                echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+                echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
+
+                echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+                echo "JWT_AT=${{ secrets.JWT_AT }}" >> .env
+                echo "JWT_RT=${{ secrets.JWT_RT }}" >> .env
+
+                echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+                echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+                echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env
+
+                echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+                echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
+                echo "NAVER_REDIRECT_URI=${{ secrets.NAVER_REDIRECT_URI }}" >> .env
+
+            - name: Build and Push Docker Image
+              run: |
+                IMAGE_NAME=${{secrets.DOCKER_USERNAME}}/spring-app2
+                TAG=${{github.sha}}
+
+                docker build -t $IMAGE_NAME:$TAG .
+                docker push $IMAGE_NAME:$TAG
+
+            - name: Send .env to EC2  # .env 파일을 Ex2 서버의 홈 디렉토리에 복사 하자 
+              uses: appleboy/scp-action@v0.1.4
+              with:
+                host: ${{ secrets.AWS_EC2_HOST }}
+                username: ${{ secrets.AWS_EC2_USER }}
+                key: ${{ secrets.AWS_EC2_KEY }}
+                source: ".env"
+                target: "/home/${{ secrets.AWS_EC2_USER }}/"
+            
+              # .환경변수 주입해서 컨테이너 실행
+            - name: Deploy to AWS EC2
+                #  EC2 서버에 SSH로접속   
+              uses: appleboy/ssh-action@v0.1.8
+              with: 
+                host: ${{secrets.AWS_EC2_HOST}}
+                username: ${{secrets.AWS_EC2_USER}}
+                key: ${{secrets.AWS_EC2_KEY}}
+                script: |
+                    docker pull ${{secrets.DOCKER_USERNAME}}/spring-app2:${{github.sha}}
+                    docker stop spring-app2 || true
+                    docker rm spring-app2 || true
+                    docker run -d --env-file /home/${{ secrets.AWS_EC2_USER }}/.env \
+                      -p 8080:8080 --name spring-app2 \
+                      ${{secrets.DOCKER_USERNAME}}/spring-app2:${{github.sha}}     

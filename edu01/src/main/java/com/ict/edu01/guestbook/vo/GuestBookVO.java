@@ -13,6 +13,5 @@ public class GuestBookVO {
     private int gb_idx;
     private String gb_name, gb_subject, gb_content, gb_email, gb_f_name, 
     gb_regdate, gb_pw, gb_old_f_name;
-    private MultipartFile file_name;
     
 }

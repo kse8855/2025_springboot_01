@@ -10,6 +10,6 @@ public interface GuestBookService {
     List<GuestBookVO> guestbooklist();
     GuestBookVO guestbookdetail(String gb_idx);
     int getGuestbookinsert(GuestBookVO gvo);
-    int guestbookupdate(GuestBookVO gvo, MultipartFile file);
+    int guestbookupdate(GuestBookVO gvo);
     int deleteGuestbook(String gb_idx);
 }

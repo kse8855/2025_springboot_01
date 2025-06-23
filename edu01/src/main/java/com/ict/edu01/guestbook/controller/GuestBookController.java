@@ -1,5 +1,6 @@
 package com.ict.edu01.guestbook.controller;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,18 +109,26 @@ public class GuestBookController {
 
     @PostMapping("guestbookupdate")
     public DataVO guestbookupdate(
-        @ModelAttribute GuestBookVO gvo,
-        @RequestPart(value = "file", required = false) MultipartFile file
-    ) {
+            @ModelAttribute GuestBookVO gvo,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         DataVO dataVO = new DataVO();
         try {
-            // 파일처리, 기존 파일명 유지/갱신 등은 기존 insert처럼 처리
-            int result = guestBookService.guestbookupdate(gvo, file);
-            dataVO.setSuccess(true);
-            dataVO.setMessage("수정 완료");
+            // 1. 파일이 있으면 저장
+            if (file != null && !file.isEmpty()) {
+                String uploadDir = System.getProperty("user.dir") + "/uploads";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                File saveFile = new File(dir, fileName);
+                file.transferTo(saveFile);
+                gvo.setGb_f_name(fileName); // DB에는 파일명만 저장
+            }
+            int result = guestBookService.guestbookupdate(gvo); // 반드시 gb_idx 값 있음
+            dataVO.setSuccess(result > 0);
+            dataVO.setMessage(result > 0 ? "수정 완료" : "수정 실패");
         } catch (Exception e) {
             dataVO.setSuccess(false);
-            dataVO.setMessage("수정 실패: " + e.getMessage());
+            dataVO.setMessage("서버 오류 : " + e.getMessage());
         }
         return dataVO;
     }

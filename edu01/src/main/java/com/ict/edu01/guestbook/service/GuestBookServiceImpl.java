@@ -31,8 +31,8 @@ public class GuestBookServiceImpl implements GuestBookService {
     }
 
     @Override
-    public int guestbookupdate(GuestBookVO gvo, MultipartFile file) {
-        return guestbookMapper.guestbookupdate(gvo, file);
+    public int guestbookupdate(GuestBookVO gvo) {
+        return guestbookMapper.guestbookupdate(gvo);
      }
 
     @Override

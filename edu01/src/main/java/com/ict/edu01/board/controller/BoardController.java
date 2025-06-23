@@ -61,32 +61,42 @@ public class BoardController {
     }
 
     @PostMapping("boardinsert")
-    public DataVO getBoardInsert(@ModelAttribute BoardVO gvo,
-    @RequestPart(value = "file", required = false) MultipartFile file){
+    public DataVO getBoardinsert(
+        @RequestParam("writer") String writer,
+        @RequestParam("title") String title,
+        @RequestParam("content") String content,
+        @RequestParam(value = "pwd", required = false) String pwd,
+        @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        System.out.println("writer: " + writer);
         DataVO dataVO = new DataVO();
         try {
-        // 1. 파일 저장 및 파일명 설정
+            // 1. VO 객체에 값 넣기
+            BoardVO bvo = new BoardVO();
+            bvo.setWriter(writer);
+            bvo.setTitle(title);
+            bvo.setContent(content);
+            bvo.setPwd(pwd);
+    
+            // 2. 파일 저장 및 파일명 설정
             if (file != null && !file.isEmpty()) {
                 String originalFileName = file.getOriginalFilename();
-                // 파일명 중복 방지 (타임스탬프)
                 String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
-
-                // === uploads 경로는 Spring Boot가 실행되는 "프로젝트 루트" 기준 ===
+    
                 String uploadDir = System.getProperty("user.dir") + "/uploads";
                 java.io.File dir = new java.io.File(uploadDir);
                 if (!dir.exists()) dir.mkdirs();
-
-                // 실제 파일 저장
+    
                 String uploadPath = uploadDir + java.io.File.separator + uniqueFileName;
                 file.transferTo(new java.io.File(uploadPath));
-
-                // ★★★ VO에 파일명 저장
-                gvo.setF_name(uniqueFileName);
+    
+                // VO에 파일명 저장
+                bvo.setF_name(uniqueFileName);
             }
-
-            // 2. DB 저장
-            int result = boardService.getBoardInsert(gvo);
-
+    
+            // 3. DB 저장 (서비스에 VO만 넘김)
+            int result = boardService.getBoardinsert(bvo);
+    
             dataVO.setSuccess(true);
             dataVO.setMessage("글쓰기 완료");
         } catch (Exception e) {
@@ -94,7 +104,8 @@ public class BoardController {
             dataVO.setSuccess(false);
             dataVO.setMessage("서버 오류 : " + e.getMessage());
         }
-    return dataVO;
+        return dataVO;
     }
+    
     
 }
